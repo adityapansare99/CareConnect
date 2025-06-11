@@ -46,16 +46,16 @@ const About = () => {
 
       <div className="flex flex-col md:flex-row mb-20">
         <div className="border md:px-16 py-8 sm:py-16 flex flex-col gap-5 text-[15px] hover:bg-[#5f6FFF] hover:text-white transition-all duration-300 text-gray-600 cursor-pointer">
-          <b>EFFICIENCY:</b>
-          <p>Streamlined appointment scheduling that fits into your busy lifestyle.</p>
+          <b className="sm:mx-0 mx-4">EFFICIENCY:</b>
+          <p className="sm:mx-0 mx-4">Streamlined appointment scheduling that fits into your busy lifestyle.</p>
         </div>
         <div className="border md:px-16 py-8 sm:py-16 flex flex-col gap-5 text-[15px] hover:bg-[#5f6FFF] hover:text-white transition-all duration-300 text-gray-600 cursor-pointer">
-          <b>CONVENIENCE:</b>
-          <p>Access to a network of trusted healthcare professionals in your area.</p>
+          <b className="sm:mx-0 mx-4">CONVENIENCE:</b>
+          <p className="sm:mx-0 mx-4">Access to a network of trusted healthcare professionals in your area.</p>
         </div>
         <div className="border md:px-16 py-8 sm:py-16 flex flex-col gap-5 text-[15px] hover:bg-[#5f6FFF] hover:text-white transition-all duration-300 text-gray-600 cursor-pointer">
-          <b>PERSONALIZATION:</b>
-          <p>Tailored recommendations and reminders to help you stay on top of your health.</p>
+          <b className="sm:mx-0 mx-4">PERSONALIZATION:</b>
+          <p className="sm:mx-0 mx-4">Tailored recommendations and reminders to help you stay on top of your health.</p>
         </div>
       </div>
     </div>
