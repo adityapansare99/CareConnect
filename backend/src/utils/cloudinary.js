@@ -11,12 +11,6 @@ cloudinary.config({
 });
 
 const uploadoncloudinary = async (filepath) => {
-  if (!fs.existsSync(filepath)) {
-    console.log("File not found:", filepath);
-  } else {
-    console.log("file found");
-  }
-
   try {
     if (!filepath) return null;
 
@@ -25,15 +19,6 @@ const uploadoncloudinary = async (filepath) => {
     });
 
     console.log("successfully uploaded to cloudinary" + response.url);
-
-
-    fs.unlink(filepath, (err) => {
-      if (err) {
-        console.log("File not deleted from local storage:", err);
-      } else {
-        console.log("File deleted from local storage");
-      }
-    });
 
     return response;
   } catch (err) {
