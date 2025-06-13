@@ -120,4 +120,16 @@ const adminlogin = asynchandler(async (req, res) => {
   }
 });
 
-export { adddoctor, adminlogin };
+//All doctors
+const alldoctors=asynchandler(async(req,res)=>{
+  try{
+    const doctors=await Doctor.find({}).select("-password");
+    res.status(200).json(new ApiResponse(200,doctors,"All doctors"))
+  }
+
+  catch(err){
+    res.status(400).json(new ApiResponse(400,{},err.message))
+  }
+})
+
+export { adddoctor, adminlogin,alldoctors };
