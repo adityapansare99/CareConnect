@@ -84,32 +84,6 @@ doctorschema.pre("save", async function (next) {
   next();
 });
 
-doctorschema.methods.isPasswordCorrect = async function (password) {
-  return await bcrypt.compare(password, this.password);
-};
-
-doctorschema.methods.Generatingaccesstoken = function () {
-  return jwt.sign(
-    {
-      _id: this.id,
-      password: this.password,
-      fullname: this.fullname,
-    },
-    process.env.accesstoken,
-    { expiresIn: process.env.accesstime }
-  );
-};
-
-doctorschema.methods.Generatingrefershtoken = function () {
-  return jwt.sign(
-    {
-      _id: this.id,
-    },
-    process.env.refreshtoken,
-    { expiresIn: process.env.refreshtime }
-  );
-};
-
 const Doctor=mongoose.model("doctors",doctorschema);
 
 export {Doctor}

@@ -18,6 +18,8 @@ const adddoctor = asynchandler(async (req, res) => {
   if (!err.isEmpty()) {
     return res.status(400).json(new ApiResponse(400, {}, err.array()[0].msg));
   }
+  const data = JSON.parse(req.body.data);
+
   const {
     name,
     email,
@@ -28,7 +30,17 @@ const adddoctor = asynchandler(async (req, res) => {
     about,
     fees,
     address,
-  } = req.body;
+  } = data;
+
+  if (!email || !validator.isEmail(email)) {
+    return res.status(400).json(new ApiResponse(400, {}, "Invalid Email"));
+  }
+
+  if (!password || password.length < 8) {
+    return res
+      .status(400)
+      .json(new ApiResponse(400, {}, "Password must be at least 8 characters"));
+  }
 
   if (
     [name, email, password, speciality, degree, experience, about, fees].some(
@@ -55,7 +67,7 @@ const adddoctor = asynchandler(async (req, res) => {
     experience,
     about,
     fees,
-    address: JSON.parse(address),
+    address,
     image: imageres.url,
     avaliable: true,
     date: Date.now(),
