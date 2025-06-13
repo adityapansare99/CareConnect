@@ -22,4 +22,7 @@ app.use("/", router);
 import { adminrouter } from "./routes/admin.route.js";
 app.use("/admin", adminrouter);
 
+import {doctorsrouter} from "./routes/doctor.route.js"
+app.use("/doctors",doctorsrouter)
+
 export { app };
