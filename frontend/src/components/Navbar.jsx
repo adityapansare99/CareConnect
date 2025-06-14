@@ -1,11 +1,17 @@
-import React, { use, useState } from "react";
+import React, { use, useContext, useState } from "react";
 import { assets } from "../assets/assets_frontend/assets.js";
 import { NavLink, useNavigate } from "react-router-dom";
+import { AppContext } from "../context/AppContext.jsx";
 
 const Navbar = () => {
   const navigate = useNavigate();
+  const {token,settoken}=useContext(AppContext);
   const [showMenu, setShowMenu] = useState(false);
-  const [token, setToken] = useState(true);
+
+  const logout=()=>{
+    settoken(false);
+    localStorage.removeItem('token');
+  }
 
   return (
     <div className="flex items-center justify-between text-sm py-4 mb-5 border-b border-b-gray-400">
@@ -60,9 +66,7 @@ const Navbar = () => {
                   My Appointments
                 </p>
                 <p
-                  onClick={() => {
-                    setToken(false);
-                  }}
+                  onClick={logout}
                   className="hover:text-black cursor-pointer"
                 >
                   Logout
@@ -75,7 +79,7 @@ const Navbar = () => {
             onClick={() => {
               navigate("/login");
             }}
-            className="text-white bg-[#5f6FFF] px-8 py-3 rounded-full font-light hidden md:block"
+            className="cursor-pointer text-white bg-[#5f6FFF] px-8 py-3 rounded-full font-light hidden md:block"
           >
             Create Account
           </button>

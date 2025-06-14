@@ -10,6 +10,7 @@ const AppContextProvider = (props) => {
   const currency = "$";
 
   const [doctors, setdoctors] = useState([]);
+  const [token, settoken] = useState(localStorage.getItem("token")?localStorage.getItem("token"):"");
 
   const getdocdata = async () => {
     try {
@@ -34,6 +35,9 @@ const AppContextProvider = (props) => {
     doctors,
     currency,
     getdocdata,
+    token,
+    settoken,
+    backendurl
   };
 
   return (
