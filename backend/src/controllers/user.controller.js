@@ -231,4 +231,16 @@ const bookappointment = asynchandler(async (req, res) => {
   }
 });
 
-export { registeruser, loginuser, getprofile, updateuser,bookappointment };
+//all appointments that are booked by user
+const getappointments = asynchandler(async (req, res) => {
+  try {
+    const appointments = await Appointment.find({ userId: req.user._id });
+    res
+      .status(200)
+      .json(new ApiResponse(200, appointments, "All Appointments Fetched"));
+  } catch (error) {
+    res.status(400).json(new ApiResponse(400, {}, error.message));
+  }
+});
+
+export { registeruser, loginuser, getprofile, updateuser,bookappointment,getappointments };

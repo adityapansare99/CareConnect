@@ -1,5 +1,5 @@
 import { Router } from "express";
-import {registeruser,loginuser,getprofile,updateuser,bookappointment} from "../controllers/user.controller.js";
+import {registeruser,loginuser,getprofile,updateuser,bookappointment,getappointments} from "../controllers/user.controller.js";
 import {authuser} from "../middlewares/auth.middleware.js"
 import {upload} from "../middlewares/multer.middleware.js"
 
@@ -10,5 +10,6 @@ userrouter.route("/login").post(loginuser);
 userrouter.route("/user-profile").get(authuser,getprofile);
 userrouter.route("/update-user").post(authuser,upload.single("image"),updateuser);
 userrouter.route("/book-appointment").post(authuser,bookappointment);
+userrouter.route("/get-appointments").get(authuser,getappointments);
 
 export {userrouter}
