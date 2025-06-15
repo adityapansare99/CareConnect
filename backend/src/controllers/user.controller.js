@@ -7,6 +7,7 @@ import jwt from "jsonwebtoken";
 import { uploadoncloudinary } from "../utils/cloudinary.js";
 import { Doctor } from "../models/doctor.model.js";
 import Appointment from "../models/Appointment.model.js";
+import razorpay from "razorpay";
 
 //register user
 const registeruser = asynchandler(async (req, res) => {
@@ -169,7 +170,7 @@ const updateuser = asynchandler(async (req, res) => {
 
 //book appointment
 const bookappointment = asynchandler(async (req, res) => {
-  const {docId, slotDate, slotTime } = req.body;
+  const { docId, slotDate, slotTime } = req.body;
 
   const userId = req.user._id;
 
@@ -204,7 +205,7 @@ const bookappointment = asynchandler(async (req, res) => {
 
     delete docData.slots_booked;
 
-    const newAppointment =await Appointment.create({
+    const newAppointment = await Appointment.create({
       userId,
       docId,
       userData,
@@ -220,7 +221,9 @@ const bookappointment = asynchandler(async (req, res) => {
     });
 
     if (!newAppointment) {
-      return res.status(400).json(new ApiResponse(400, {}, "Appointment not booked"));
+      return res
+        .status(400)
+        .json(new ApiResponse(400, {}, "Appointment not booked"));
     }
 
     res
@@ -243,29 +246,101 @@ const getappointments = asynchandler(async (req, res) => {
   }
 });
 
-//cancel the appointment 
+//cancel the appointment
 const cancelappointment = asynchandler(async (req, res) => {
   try {
-    const userId=req.user._id;
+    const userId = req.user._id;
     const { appointmentId } = req.body;
 
-    const response=await Appointment.findByIdAndUpdate(appointmentId,{cancelled:true});
+    const response = await Appointment.findByIdAndUpdate(appointmentId, {
+      cancelled: true,
+    });
 
-    if(!response){
-      return res.status(400).json(new ApiResponse(400, {}, "Appointment not cancelled"));
+    if (!response) {
+      return res
+        .status(400)
+        .json(new ApiResponse(400, {}, "Appointment not cancelled"));
     }
 
-    const {docId,slotDate,slotTime}=response;
-    const docData=await Doctor.findById(docId).select('-password');
-    let slots_booked=docData.slots_booked;
+    const { docId, slotDate, slotTime } = response;
+    const docData = await Doctor.findById(docId).select("-password");
+    let slots_booked = docData.slots_booked;
 
-    slots_booked[slotDate]=slots_booked[slotDate].filter((slot)=>slot!==slotTime);
+    slots_booked[slotDate] = slots_booked[slotDate].filter(
+      (slot) => slot !== slotTime
+    );
 
-    await Doctor.findByIdAndUpdate(docId,{slots_booked});
-    res.status(200).json(new ApiResponse(200, response, "Appointment Cancelled"));
+    await Doctor.findByIdAndUpdate(docId, { slots_booked });
+    res
+      .status(200)
+      .json(new ApiResponse(200, response, "Appointment Cancelled"));
+  } catch (error) {
+    res.status(400).json(new ApiResponse(400, {}, error.message));
+  }
+});
+
+const razorpayinstance = new razorpay({
+  key_id: process.env.RazorPayKey,
+  key_secret: process.env.RazorPaySecretKey,
+});
+
+//appointment payment using razorpay
+const payment = asynchandler(async (req, res) => {
+  try {
+    const { appointmentId } = req.body;
+
+    const appointmentData = await Appointment.findById(appointmentId);
+
+    if (!appointmentData || appointmentData.cancelled) {
+      return res
+        .status(400)
+        .json(
+          new ApiResponse(400, {}, "Appointment not found or already cancelled")
+        );
+    }
+
+    const options = {
+      amount: appointmentData.amount*100,
+      currency: process.env.Currency,
+      receipt: appointmentId,
+    };
+
+    const order = await razorpayinstance.orders.create(options);
+
+    res.status(200).json(new ApiResponse(200, order, "Order created"));
+  } catch (error) {
+    res.status(400).json(new ApiResponse(400, {}, error.message));
+  }
+});
+
+//api to verify the payment
+const verifypayment = asynchandler(async (req, res) => {
+  try {
+    const {razorpay_order_id} = req.body;
+    const orderInfo=await razorpayinstance.orders.fetch(razorpay_order_id);
+
+    if(orderInfo.status==="paid"){
+      const appointmentId = orderInfo.receipt;
+      await Appointment.findByIdAndUpdate(appointmentId,{payment:true});
+      res.status(200).json(new ApiResponse(200, {}, "Payment Successful"));
+    }
+
+    else{
+      res.status(400).json(new ApiResponse(400, {}, "Payment not Successful"));
+    }
   } catch (error) {
     res.status(400).json(new ApiResponse(400, {}, error.message));
   }
 })
 
-export { registeruser, loginuser, getprofile, updateuser,bookappointment,getappointments,cancelappointment };
+export {
+  registeruser,
+  loginuser,
+  getprofile,
+  updateuser,
+  bookappointment,
+  getappointments,
+  cancelappointment,
+  payment,
+  verifypayment
+};

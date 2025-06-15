@@ -4,16 +4,34 @@ import { useState } from "react";
 import { toast } from "react-toastify";
 import { useEffect } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const MyAppointment = () => {
   const { getdocdata, backendurl, token } = useContext(AppContext);
   const [appointment, setappointment] = useState([]);
+  const navigate = useNavigate();
 
-  const months=[' ','Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-  const dateformat=(slotDate)=>{
-    const datearray=slotDate.split('_');
-    return datearray[0]+' '+months[Number(datearray[1])]+' '+datearray[2];
-  }
+  const months = [
+    " ",
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+  ];
+  const dateformat = (slotDate) => {
+    const datearray = slotDate.split("_");
+    return (
+      datearray[0] + " " + months[Number(datearray[1])] + " " + datearray[2]
+    );
+  };
 
   const getappointments = async () => {
     try {
@@ -23,11 +41,28 @@ const MyAppointment = () => {
 
       if (data.success) {
         setappointment(data.data.reverse());
-        console.log(data.data);
         toast.success(data.message);
       } else {
-        console.log(error);
         toast.error("Something went wrong!");
+      }
+    } catch (error) {
+      toast.error(error?.response?.data?.message || "Something went wrong!");
+    }
+  };
+
+  const cancelappointment = async (appointmentId) => {
+    try {
+      const response = await axios.post(
+        `${backendurl}/user/cancel-appointment`,
+        { appointmentId },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      if (response.data.success) {
+        toast.success(response.data.message);
+        getappointments();
+        getdocdata();
+      } else {
+        toast.error(response.data.message || "something went wrong!");
       }
     } catch (error) {
       console.log(error);
@@ -35,28 +70,54 @@ const MyAppointment = () => {
     }
   };
 
-  const cancelappointment=async(appointmentId)=>{
-    try {
-      const response=await axios.post(`${backendurl}/user/cancel-appointment`,{appointmentId},{headers:{Authorization:`Bearer ${token}`}})
-      if(response.data.success){
-        toast.success(response.data.message);
-        getappointments();
-        getdocdata();
-      }
+  const initpay = (order) => {
+    const options = {
+      key: import.meta.env.VITE_RazorPayKey,
+      amount: order.amount,
+      currency: order.currency,
+      name: "CareConnect",
+      description: "CareConnect Payment",
+      order_id: order.id,
+      receipt: order.receipt,
+      handler: async (response) => {
+        try {
+          const {data}=await axios.post(`${backendurl}/user/verify-payment`,{razorpay_order_id:response.razorpay_order_id},{headers:{Authorization:`Bearer ${token}`}});
 
-      else{
-        toast.error(response.data.message || 'something went wrong!');
+          if(data.success){
+            toast.success(data.message);
+            getappointments();
+            navigate('/my-appointments')
+          }
+        } catch (error) {
+          toast.error(error?.response?.data?.message || "Something went wrong!");
+        }
+      },
+    };
+
+    const rzp = new window.Razorpay(options);
+    rzp.open();
+  };
+
+  const appointmentrazorpay = async (appointmentId) => {
+    try {
+      const { data } = await axios.post(
+        `${backendurl}/user/payment`,
+        { appointmentId },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      if (data.success) {
+        initpay(data.data);
       }
     } catch (error) {
-      console.log(error);
       toast.error(error?.response?.data?.message || "Something went wrong!");
     }
-  }
+  };
 
   useEffect(() => {
-    if (token){
+    if (token) {
       getappointments();
-    } 
+    }
   }, [token]);
 
   return (
@@ -97,19 +158,33 @@ const MyAppointment = () => {
 
             <div className="flex flex-col gap-2 justify-end">
               {
-                !item.cancelled && <button className="text-sm text-stone-500 text-center sm:min-w-48 py-2 border rounded hover:bg-[#5f6FFF] hover:text-white transition-all duration-300">
-                Pay Online
-              </button>
+                !item.cancelled && item.payment && (
+                  <button className="sm:min-w-48 py-2 border rounded text-stone-500 bg-indigo-50">Paid</button>
+                )
               }
-              
-              {!item.cancelled && <button onClick={()=>cancelappointment(item._id)} className="text-sm text-stone-500 text-center sm:min-w-48 py-2 border rounded hover:bg-red-600 hover:text-white transition-all duration-300">
-                Cancel Appointment
-              </button>}
+              {!item.cancelled && !item.payment && (
+                <button
+                  onClick={() => appointmentrazorpay(item._id)}
+                  className="text-sm text-stone-500 text-center sm:min-w-48 py-2 border rounded hover:bg-[#5f6FFF] hover:text-white transition-all duration-300"
+                >
+                  Pay Online
+                </button>
+              )}
 
-              {
-                item.cancelled && <button className="sm:min-w-48 py-2 border border-red-500 rounded text-red-500">Appointment Cancelled</button>
-              }
-              
+              {!item.cancelled && (
+                <button
+                  onClick={() => cancelappointment(item._id)}
+                  className="text-sm text-stone-500 text-center sm:min-w-48 py-2 border rounded hover:bg-red-600 hover:text-white transition-all duration-300"
+                >
+                  Cancel Appointment
+                </button>
+              )}
+
+              {item.cancelled && (
+                <button className="sm:min-w-48 py-2 border border-red-500 rounded text-red-500">
+                  Appointment Cancelled
+                </button>
+              )}
             </div>
           </div>
         ))}
