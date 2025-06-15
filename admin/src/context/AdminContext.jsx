@@ -10,6 +10,7 @@ const AdminContextProvider = (props) => {
     localStorage.getItem("atoken") ? localStorage.getItem("atoken") : ""
   );
   const backendurl = import.meta.env.VITE_BACKEND_URL;
+  const [allappointments, setallappointments] = useState([]);
 
   const alldoctors = async () => {
     try {
@@ -20,7 +21,7 @@ const AdminContextProvider = (props) => {
       );
 
       if (data.success) {
-        setdocdata(data.data);     
+        setdocdata(data.data);
       } else {
         toast.error("Something went wrong!");
       }
@@ -29,23 +30,61 @@ const AdminContextProvider = (props) => {
     }
   };
 
-  const changestatus=async(docid)=>{
-    try{
-        const {data}=await axios.post(`${backendurl}/admin/change-available`,{docid},{headers:{Authorization:`Bearer ${atoken}`}})
+  const changestatus = async (docid) => {
+    try {
+      const { data } = await axios.post(
+        `${backendurl}/admin/change-available`,
+        { docid },
+        { headers: { Authorization: `Bearer ${atoken}` } }
+      );
 
-        if(data.success){
-            toast.success(data.message);
-            alldoctors();
-        }
-
-        else{
-            toast.error('Something went wrong!');
-        }
-    }
-    catch(err){
+      if (data.success) {
+        toast.success(data.message);
+        alldoctors();
+      } else {
         toast.error("Something went wrong!");
+      }
+    } catch (err) {
+      toast.error("Something went wrong!");
     }
-  }
+  };
+
+  const getallappointments = async () => {
+    try {
+      const { data } = await axios.get(`${backendurl}/admin/all-appointments`, {
+        headers: { Authorization: `Bearer ${atoken}` },
+      });
+
+      if (data.success) {
+        toast.success(data.message);
+        setallappointments(data.data);
+      } else {
+        toast.error(data.message || "Something went wrong!");
+      }
+    } catch (error) {
+      toast.error(error?.response?.data?.message || "Something went wrong!");
+    }
+  };
+
+  const cancelAppointment = async (appointmentId) => {
+    try {
+      const { data } = await axios.post(
+        `${backendurl}/admin/cancel-appointment`,
+        { appointmentId },
+        { headers: { Authorization: `Bearer ${atoken}` } }
+      );
+
+      if(data.success){
+        toast.success(data.message);
+        getallappointments();
+      }
+      else{
+        toast.error(data.message || "Something went wrong!");
+      }
+    } catch (error) {
+      toast.error(error?.response?.data?.message || "Something went wrong!");
+    }
+  };
 
   const value = {
     atoken,
@@ -53,7 +92,11 @@ const AdminContextProvider = (props) => {
     backendurl,
     docdata,
     alldoctors,
-    changestatus
+    changestatus,
+    getallappointments,
+    setallappointments,
+    allappointments,
+    cancelAppointment
   };
 
   return (

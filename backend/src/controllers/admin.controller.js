@@ -5,6 +5,7 @@ import { upload } from "../middlewares/multer.middleware.js";
 import validator from "validator";
 import { validationResult } from "express-validator";
 import { Doctor } from "../models/doctor.model.js";
+import Appointment from "../models/Appointment.model.js";
 import {
   uploadoncloudinary,
   deletefromcloudinary,
@@ -121,15 +122,57 @@ const adminlogin = asynchandler(async (req, res) => {
 });
 
 //All doctors
-const alldoctors=asynchandler(async(req,res)=>{
-  try{
-    const doctors=await Doctor.find({}).select("-password");
-    res.status(200).json(new ApiResponse(200,doctors,"All doctors"))
+const alldoctors = asynchandler(async (req, res) => {
+  try {
+    const doctors = await Doctor.find({}).select("-password");
+    res.status(200).json(new ApiResponse(200, doctors, "All doctors"));
+  } catch (err) {
+    res.status(400).json(new ApiResponse(400, {}, err.message));
   }
+});
 
-  catch(err){
-    res.status(400).json(new ApiResponse(400,{},err.message))
+//get all appointments
+const allappointments = asynchandler(async (req, res) => {
+  try {
+    const appointments = await Appointment.find({});
+    res
+      .status(200)
+      .json(new ApiResponse(200, appointments, "All appointments fetched"));
+  } catch (err) {
+    res.status(400).json(new ApiResponse(400, {}, err.message));
   }
-})
+});
 
-export { adddoctor, adminlogin,alldoctors };
+//cancel an appointment
+const cancelappointment = asynchandler(async (req, res) => {
+  try {
+    const { appointmentId } = req.body;
+
+    const response = await Appointment.findByIdAndUpdate(appointmentId, {
+      cancelled: true,
+    });
+
+    if (!response) {
+      return res
+        .status(400)
+        .json(new ApiResponse(400, {}, "Appointment not cancelled"));
+    }
+
+    const { docId, slotDate, slotTime } = response;
+    const docData = await Doctor.findById(docId).select("-password");
+    let slots_booked = docData.slots_booked;
+
+    slots_booked[slotDate] = slots_booked[slotDate].filter(
+      (slot) => slot !== slotTime
+    );
+
+    await Doctor.findByIdAndUpdate(docId, { slots_booked });
+    res
+      .status(200)
+      .json(new ApiResponse(200, response, "Appointment Cancelled"));
+  } catch (error) {
+    res.status(400).json(new ApiResponse(400, {}, error.message));
+  }
+});
+
+export { adddoctor, adminlogin, alldoctors, allappointments,cancelappointment };
