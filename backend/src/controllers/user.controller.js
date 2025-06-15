@@ -129,8 +129,6 @@ const getprofile = asynchandler(async (req, res) => {
 //update the user
 const updateuser = asynchandler(async (req, res) => {
   try {
-    console.log("BODY", req.body);
-    console.log("FILE", req.file);
 
     const { name, address, dob, gender, phone } = req.body;
     const imagefile = req.file;

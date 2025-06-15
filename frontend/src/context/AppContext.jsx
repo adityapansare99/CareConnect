@@ -11,6 +11,7 @@ const AppContextProvider = (props) => {
 
   const [doctors, setdoctors] = useState([]);
   const [token, settoken] = useState(localStorage.getItem("token")?localStorage.getItem("token"):"");
+  const [userdata,setuserdata]=useState(false);
 
   const getdocdata = async () => {
     try {
@@ -27,9 +28,31 @@ const AppContextProvider = (props) => {
     }
   };
 
+  const userprofiledata=async()=>{
+    try {
+     const {data}=await axios.get(`${backendurl}/user/user-profile`,{headers:{Authorization:`Bearer ${token}`}})
+
+     if(data.success){
+      setuserdata(data.data);
+      toast.success(data.message);
+     }
+
+     else{
+      toast.error("Something went wrong!");
+     }
+    } catch (error) {
+      toast.error("Something went wrong!");
+    }
+  }
+
   useEffect(() => {
     getdocdata();
   }, []);
+
+  useEffect(() => {
+    if(token)
+    userprofiledata();
+  }, [token]);
 
   const value = {
     doctors,
@@ -37,7 +60,10 @@ const AppContextProvider = (props) => {
     getdocdata,
     token,
     settoken,
-    backendurl
+    backendurl,
+    userdata,
+    setuserdata,
+    userprofiledata
   };
 
   return (
