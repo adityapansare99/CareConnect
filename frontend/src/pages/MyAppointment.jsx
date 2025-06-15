@@ -6,7 +6,7 @@ import { useEffect } from "react";
 import axios from "axios";
 
 const MyAppointment = () => {
-  const { doctors, backendurl, token } = useContext(AppContext);
+  const { getdocdata, backendurl, token } = useContext(AppContext);
   const [appointment, setappointment] = useState([]);
 
   const months=[' ','Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
@@ -35,8 +35,28 @@ const MyAppointment = () => {
     }
   };
 
+  const cancelappointment=async(appointmentId)=>{
+    try {
+      const response=await axios.post(`${backendurl}/user/cancel-appointment`,{appointmentId},{headers:{Authorization:`Bearer ${token}`}})
+      if(response.data.success){
+        toast.success(response.data.message);
+        getappointments();
+        getdocdata();
+      }
+
+      else{
+        toast.error(response.data.message || 'something went wrong!');
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error(error?.response?.data?.message || "Something went wrong!");
+    }
+  }
+
   useEffect(() => {
-    if (token) getappointments();
+    if (token){
+      getappointments();
+    } 
   }, [token]);
 
   return (
@@ -76,12 +96,20 @@ const MyAppointment = () => {
             <div></div>
 
             <div className="flex flex-col gap-2 justify-end">
-              <button className="text-sm text-stone-500 text-center sm:min-w-48 py-2 border rounded hover:bg-[#5f6FFF] hover:text-white transition-all duration-300">
+              {
+                !item.cancelled && <button className="text-sm text-stone-500 text-center sm:min-w-48 py-2 border rounded hover:bg-[#5f6FFF] hover:text-white transition-all duration-300">
                 Pay Online
               </button>
-              <button className="text-sm text-stone-500 text-center sm:min-w-48 py-2 border rounded hover:bg-red-600 hover:text-white transition-all duration-300">
+              }
+              
+              {!item.cancelled && <button onClick={()=>cancelappointment(item._id)} className="text-sm text-stone-500 text-center sm:min-w-48 py-2 border rounded hover:bg-red-600 hover:text-white transition-all duration-300">
                 Cancel Appointment
-              </button>
+              </button>}
+
+              {
+                item.cancelled && <button className="sm:min-w-48 py-2 border border-red-500 rounded text-red-500">Appointment Cancelled</button>
+              }
+              
             </div>
           </div>
         ))}

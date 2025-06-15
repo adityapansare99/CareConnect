@@ -243,4 +243,29 @@ const getappointments = asynchandler(async (req, res) => {
   }
 });
 
-export { registeruser, loginuser, getprofile, updateuser,bookappointment,getappointments };
+//cancel the appointment 
+const cancelappointment = asynchandler(async (req, res) => {
+  try {
+    const userId=req.user._id;
+    const { appointmentId } = req.body;
+
+    const response=await Appointment.findByIdAndUpdate(appointmentId,{cancelled:true});
+
+    if(!response){
+      return res.status(400).json(new ApiResponse(400, {}, "Appointment not cancelled"));
+    }
+
+    const {docId,slotDate,slotTime}=response;
+    const docData=await Doctor.findById(docId).select('-password');
+    let slots_booked=docData.slots_booked;
+
+    slots_booked[slotDate]=slots_booked[slotDate].filter((slot)=>slot!==slotTime);
+
+    await Doctor.findByIdAndUpdate(docId,{slots_booked});
+    res.status(200).json(new ApiResponse(200, response, "Appointment Cancelled"));
+  } catch (error) {
+    res.status(400).json(new ApiResponse(400, {}, error.message));
+  }
+})
+
+export { registeruser, loginuser, getprofile, updateuser,bookappointment,getappointments,cancelappointment };
