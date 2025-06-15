@@ -38,10 +38,10 @@ const AddDoctor = () => {
         address: { line1: address1, line2: address2 },
       };
 
-      const formdata=new FormData();
+      const formdata = new FormData();
 
-      formdata.append("image",image);
-      formdata.append("data",JSON.stringify(form));
+      formdata.append("image", image);
+      formdata.append("data", JSON.stringify(form));
 
       const { data } = await axios.post(
         `${backendurl}/admin/add-doctor`,
@@ -49,7 +49,7 @@ const AddDoctor = () => {
         { headers: { Authorization: `Bearer ${atoken}` } }
       );
 
-      if(data.success){
+      if (data.success) {
         toast.success(data.message);
         // setName("");
         // setEmail("");
@@ -62,13 +62,11 @@ const AddDoctor = () => {
         // setaddress1("");
         // setaddress2("");
         // setImage(false);
-      }
-
-      else{
-        toast.error('Something went wrong!');
+      } else {
+        toast.error("Something went wrong!");
       }
     } catch (err) {
-      toast.error('Something went wrong!');
+      toast.error("Something went wrong!");
     }
   };
 
