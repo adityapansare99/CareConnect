@@ -5,6 +5,8 @@ import validator from "validator";
 import { User } from "../models/user.model.js";
 import jwt from "jsonwebtoken";
 import { uploadoncloudinary } from "../utils/cloudinary.js";
+import { Doctor } from "../models/doctor.model.js";
+import Appointment from "../models/Appointment.model.js";
 
 //register user
 const registeruser = asynchandler(async (req, res) => {
@@ -129,7 +131,6 @@ const getprofile = asynchandler(async (req, res) => {
 //update the user
 const updateuser = asynchandler(async (req, res) => {
   try {
-
     const { name, address, dob, gender, phone } = req.body;
     const imagefile = req.file;
 
@@ -166,5 +167,68 @@ const updateuser = asynchandler(async (req, res) => {
   }
 });
 
+//book appointment
+const bookappointment = asynchandler(async (req, res) => {
+  const {docId, slotDate, slotTime } = req.body;
 
-export { registeruser, loginuser, getprofile,updateuser };
+  const userId = req.user._id;
+
+  if (!userId || !docId || !slotDate || !slotTime) {
+    return res
+      .status(400)
+      .json(new ApiResponse(400, {}, "All fields are required"));
+  }
+  try {
+    const docData = await Doctor.findById(docId).select("-password");
+
+    if (!docData) {
+      return res.status(400).json(new ApiResponse(400, {}, "Doctor not found"));
+    }
+
+    let slots_booked = docData.slots_booked;
+
+    if (slots_booked[slotDate]) {
+      if (slots_booked[slotDate].includes(slotTime)) {
+        return res
+          .status(400)
+          .json(new ApiResponse(400, {}, "Slot already booked"));
+      } else {
+        slots_booked[slotDate].push(slotTime);
+      }
+    } else {
+      slots_booked[slotDate] = [];
+      slots_booked[slotDate].push(slotTime);
+    }
+
+    const userData = await User.findById(userId).select("-password");
+
+    delete docData.slots_booked;
+
+    const newAppointment =await Appointment.create({
+      userId,
+      docId,
+      userData,
+      docData,
+      amount: docData.fees,
+      slotDate,
+      slotTime,
+      date: Date.now(),
+    });
+
+    await Doctor.findByIdAndUpdate(docId, {
+      slots_booked,
+    });
+
+    if (!newAppointment) {
+      return res.status(400).json(new ApiResponse(400, {}, "Appointment not booked"));
+    }
+
+    res
+      .status(200)
+      .json(new ApiResponse(200, newAppointment, "Appointment Booked"));
+  } catch (error) {
+    res.status(400).json(new ApiResponse(400, {}, error.message));
+  }
+});
+
+export { registeruser, loginuser, getprofile, updateuser,bookappointment };
