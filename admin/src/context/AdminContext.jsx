@@ -11,6 +11,7 @@ const AdminContextProvider = (props) => {
   );
   const backendurl = import.meta.env.VITE_BACKEND_URL;
   const [allappointments, setallappointments] = useState([]);
+  const [dashboarddata, setdashboarddata] = useState(false);
 
   const alldoctors = async () => {
     try {
@@ -86,6 +87,22 @@ const AdminContextProvider = (props) => {
     }
   };
 
+  const dashData=async()=>{
+    try {
+      const {data}=await axios.get(`${backendurl}/admin/dashboard`,{headers:{Authorization:`Bearer ${atoken}`}})
+
+      if(data.success){
+        setdashboarddata(data.data);
+      }
+
+      else{
+        toast.error("Something went wrong!");
+      }
+    } catch (error) {
+      toast.error(error?.response?.data?.message || "Something went wrong!");
+    }
+  }
+
   const value = {
     atoken,
     setatoken,
@@ -96,7 +113,9 @@ const AdminContextProvider = (props) => {
     getallappointments,
     setallappointments,
     allappointments,
-    cancelAppointment
+    cancelAppointment,
+    dashData,
+    dashboarddata
   };
 
   return (

@@ -11,6 +11,7 @@ import {
   deletefromcloudinary,
 } from "../utils/cloudinary.js";
 import jwt from "jsonwebtoken";
+import {User} from "../models/user.model.js"
 
 //Adding doctor
 const adddoctor = asynchandler(async (req, res) => {
@@ -175,4 +176,24 @@ const cancelappointment = asynchandler(async (req, res) => {
   }
 });
 
-export { adddoctor, adminlogin, alldoctors, allappointments,cancelappointment };
+//Dashboard data
+const admindashboard = asynchandler(async (req, res) => {
+  try {
+    const doctors = await Doctor.find({}).select("-password");
+    const user=await User.find({}).select("-password");
+    const appointments = await Appointment.find({});
+
+    const dashData={
+      doctors:doctors.length,
+      users:user.length,
+      appointments:appointments.length,
+      latestAppointment:appointments.reverse().slice(0,5)
+    }
+
+    res.status(200).json(new ApiResponse(200, dashData, "Dashboard data fetched"));
+  } catch (error) {
+    res.status(400).json(new ApiResponse(400, {}, error.message));
+  }
+})
+
+export { adddoctor, adminlogin, alldoctors, allappointments,cancelappointment,admindashboard };
