@@ -124,59 +124,104 @@ const docappointments = asynchandler(async (req, res) => {
 });
 
 //appointment completed
-const completedappointment=asynchandler(async(req,res)=>{
-    try {
-        const {appointmentId}=req.body;
+const completedappointment = asynchandler(async (req, res) => {
+  try {
+    const { appointmentId } = req.body;
 
-        if(!appointmentId){
-            return res
-            .status(400)
-            .json(new ApiResponse(400, {}, "Appointment not found"));
-        }
-        
-        const response=await Appointment.findByIdAndUpdate(appointmentId,{isComplete:true});
-
-        if(!response){
-            return res
-            .status(400)
-            .json(new ApiResponse(400, {}, "Appointment not found"));
-        }
-
-        res
-        .status(200)
-        .json(new ApiResponse(200, response, "Appointment Completed"));
-
-    } catch (error) {
-        return res.status(400).json(new ApiResponse(400, {}, error.message));
+    if (!appointmentId) {
+      return res
+        .status(400)
+        .json(new ApiResponse(400, {}, "Appointment not found"));
     }
-})
+
+    const response = await Appointment.findByIdAndUpdate(appointmentId, {
+      isComplete: true,
+    });
+
+    if (!response) {
+      return res
+        .status(400)
+        .json(new ApiResponse(400, {}, "Appointment not found"));
+    }
+
+    res
+      .status(200)
+      .json(new ApiResponse(200, response, "Appointment Completed"));
+  } catch (error) {
+    return res.status(400).json(new ApiResponse(400, {}, error.message));
+  }
+});
 
 //appointment cancelled
-const cancelappointment=asynchandler(async(req,res)=>{
-    try {
-        const {appointmentId}=req.body;
+const cancelappointment = asynchandler(async (req, res) => {
+  try {
+    const { appointmentId } = req.body;
 
-        if(!appointmentId){
-            return res
-            .status(400)
-            .json(new ApiResponse(400, {}, "Appointment not found"));
-        }
-        
-        const response=await Appointment.findByIdAndUpdate(appointmentId,{cancelled:true});
-
-        if(!response){
-            return res
-            .status(400)
-            .json(new ApiResponse(400, {}, "Appointment not found"));
-        }
-
-        res
-        .status(200)
-        .json(new ApiResponse(200, response, "Appointment Cancelled"));
-
-    } catch (error) {
-        return res.status(400).json(new ApiResponse(400, {}, error.message));
+    if (!appointmentId) {
+      return res
+        .status(400)
+        .json(new ApiResponse(400, {}, "Appointment not found"));
     }
-})
 
-export { changeavailable, getalldoctors, logindoctor,docappointments,completedappointment,cancelappointment };
+    const response = await Appointment.findByIdAndUpdate(appointmentId, {
+      cancelled: true,
+    });
+
+    if (!response) {
+      return res
+        .status(400)
+        .json(new ApiResponse(400, {}, "Appointment not found"));
+    }
+
+    res
+      .status(200)
+      .json(new ApiResponse(200, response, "Appointment Cancelled"));
+  } catch (error) {
+    return res.status(400).json(new ApiResponse(400, {}, error.message));
+  }
+});
+
+//get dashboard data
+const dashboardData = asynchandler(async (req, res) => {
+  try {
+    const docId = req.doc._id;
+
+    const appointments=await Appointment.find({docId});
+
+    let earnings=0;
+
+    appointments.map((item)=>{
+      if(item.isComplete || item.payment){
+        earnings+=item.amount;
+      }
+    })
+
+    let patients=[];
+    appointments.map((item)=>{
+      if(!patients.includes(item.userId)){
+        patients.push(item.userId);
+      }
+    })
+
+    const dashData={
+      earnings,
+      appointments:appointments.length,
+      patients:patients.length,
+      latestAppointment:appointments.reverse().slice(0,5)
+    }
+
+    res.status(200).json(new ApiResponse(200, dashData, "Dashboard data fetched"));
+  } catch (error) {
+    res.status(400).json(new ApiResponse(400, {}, error.message));
+  }
+});
+
+export {
+  changeavailable,
+  getalldoctors,
+  logindoctor,
+  docappointments,
+  completedappointment,
+  cancelappointment,
+  dashboardData
+};

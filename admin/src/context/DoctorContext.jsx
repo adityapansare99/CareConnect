@@ -12,6 +12,8 @@ const DoctorContextProvider = (props) => {
   const backendurl = import.meta.env.VITE_BACKEND_URL;
 
   const [appointments, setappointments] = useState([]);
+  const [dashData, setdashData] = useState(false);
+  const currency = "₹";
 
   const getAppointments = async () => {
     try {
@@ -51,7 +53,7 @@ const DoctorContextProvider = (props) => {
     }
   };
 
-   const cancelappointment = async (appointmentId) => {
+  const cancelappointment = async (appointmentId) => {
     try {
       const { data } = await axios.post(
         `${backendurl}/doctors/cancel-appointment`,
@@ -70,6 +72,22 @@ const DoctorContextProvider = (props) => {
     }
   };
 
+  const getdashData = async () => {
+    try {
+      const { data } = await axios.get(`${backendurl}/doctors/dashboard`, {
+        headers: { Authorization: `Bearer ${dtoken}` },
+      });
+
+      if (data.success) {
+        setdashData(data.data);
+      } else {
+        toast.error(error?.response?.data?.message ||"Something went wrong!");
+      }
+    } catch (error) {
+      toast.error(error?.response?.data?.message ||"Something went wrong!");
+    }
+  };
+
   const value = {
     dtoken,
     setdtoken,
@@ -78,7 +96,11 @@ const DoctorContextProvider = (props) => {
     appointments,
     setappointments,
     completeappointment,
-    cancelappointment
+    cancelappointment,
+    getdashData,
+    setdashData,
+    dashData,
+    currency
   };
 
   return (
