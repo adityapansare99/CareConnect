@@ -156,6 +156,7 @@ export const MyProfile = () => {
                   setuserdata((prev) => ({ ...prev, gender: e.target.value }));
                 }}
               >
+                <option value="Not Selected">Not Selected</option>
                 <option value="Male">Male</option>
                 <option value="Female">Female</option>
               </select>
