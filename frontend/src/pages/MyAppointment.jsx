@@ -162,19 +162,26 @@ const MyAppointment = () => {
                   <button className="sm:min-w-48 py-2 border rounded text-stone-500 bg-indigo-50">Paid</button>
                 )
               }
-              {!item.cancelled && !item.payment && (
+              {
+                item.isComplete && (
+                  <button className="sm:min-w-48 py-2 border border-green-500 rounded text-green-500">
+                  Appointment Completed
+                </button>
+                ) 
+              }
+              {!item.cancelled && !item.payment && !item.isComplete &&  (
                 <button
                   onClick={() => appointmentrazorpay(item._id)}
-                  className="text-sm text-stone-500 text-center sm:min-w-48 py-2 border rounded hover:bg-[#5f6FFF] hover:text-white transition-all duration-300"
+                  className="cursor-pointer text-sm text-stone-500 text-center sm:min-w-48 py-2 border rounded hover:bg-[#5f6FFF] hover:text-white transition-all duration-300"
                 >
                   Pay Online
                 </button>
               )}
 
-              {!item.cancelled && (
+              {!item.cancelled && !item.isComplete && (
                 <button
                   onClick={() => cancelappointment(item._id)}
-                  className="text-sm text-stone-500 text-center sm:min-w-48 py-2 border rounded hover:bg-red-600 hover:text-white transition-all duration-300"
+                  className="cursor-pointer text-sm text-stone-500 text-center sm:min-w-48 py-2 border rounded hover:bg-red-600 hover:text-white transition-all duration-300"
                 >
                   Cancel Appointment
                 </button>
