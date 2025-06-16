@@ -216,6 +216,39 @@ const dashboardData = asynchandler(async (req, res) => {
   }
 });
 
+//get doctor profile
+const docProfile = asynchandler(async (req, res) => {
+  try {
+    const docid = req.doc._id;
+    const doctor = await Doctor.findById(docid).select("-password");
+    res
+      .status(200)
+      .json(new ApiResponse(200, doctor, "Doctor Data Fetched"));
+  } catch (error) {
+    res.status(400).json(new ApiResponse(400, {}, error.message));
+  }
+})
+
+//update doctor profile
+const updateprofile = asynchandler(async (req, res) => {
+  try {
+    const {fees,address,avaliable}=req.body;
+    const docid = req.doc._id;
+
+    const doctor = await Doctor.findByIdAndUpdate(docid, {
+      fees,
+      address,
+      avaliable
+    })
+
+    const updateddoc=await Doctor.findById(docid).select("-password");
+
+    res.status(200).json(new ApiResponse(200, updateddoc, "Profile Updated"));
+  } catch (error) {
+    res.status(400).json(new ApiResponse(400, {}, error.message));
+  }
+})
+
 export {
   changeavailable,
   getalldoctors,
@@ -223,5 +256,7 @@ export {
   docappointments,
   completedappointment,
   cancelappointment,
-  dashboardData
+  dashboardData,
+  docProfile,
+  updateprofile
 };

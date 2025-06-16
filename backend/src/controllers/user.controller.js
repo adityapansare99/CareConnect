@@ -182,6 +182,10 @@ const bookappointment = asynchandler(async (req, res) => {
   try {
     const docData = await Doctor.findById(docId).select("-password");
 
+    if(docData.avaliable === false){
+      return res.status(400).json(new ApiResponse(400, {}, "Doctor is not avaliable"));
+    }
+
     if (!docData) {
       return res.status(400).json(new ApiResponse(400, {}, "Doctor not found"));
     }

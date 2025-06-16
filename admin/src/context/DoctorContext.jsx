@@ -15,6 +15,8 @@ const DoctorContextProvider = (props) => {
   const [dashData, setdashData] = useState(false);
   const currency = "₹";
 
+  const[profileData,setprofileData]=useState(false);
+
   const getAppointments = async () => {
     try {
       const { data } = await axios.get(
@@ -88,6 +90,21 @@ const DoctorContextProvider = (props) => {
     }
   };
 
+  const getprofiledata=async()=>{
+    try {
+      const {data}=await axios.get(`${backendurl}/doctors/doc-profile`,{headers:{Authorization:`Bearer ${dtoken}`}})
+      if(data.success){
+        setprofileData(data.data);
+      }
+
+      else{
+        toast.error("Something went wrong!");
+      }
+    } catch (error) {
+      toast.error(error?.response?.data?.message ||"Something went wrong!");
+    }
+  }
+
   const value = {
     dtoken,
     setdtoken,
@@ -100,7 +117,10 @@ const DoctorContextProvider = (props) => {
     getdashData,
     setdashData,
     dashData,
-    currency
+    currency,
+    setprofileData,
+    getprofiledata,
+    profileData
   };
 
   return (
