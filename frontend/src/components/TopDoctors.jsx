@@ -16,9 +16,13 @@ const TopDoctors = () => {
           }} className="border border-blue-200 rounded-xl overflow-hidden cursor-pointer hover:translate-y-[-10px] transition-all duration-500" key={index}>
             <img className="bg-blue-50 " src={item.image} alt="" />
             <div className="p-4 ">
-              <div className="flex items-center gap-2 text-sm text-center text-green-500">
-                <p className="h-2 w-2 rounded-full bg-green-500"></p>
-                <p>Available</p>
+              <div className={`flex items-center gap-2 text-sm text-center ${item.avaliable ? 'text-green-500': 'text-gray-500'}`}>
+                <p className={`h-2 w-2 rounded-full ${item.avaliable ? 'bg-green-500': 'bg-gray-500'} `}></p>
+                <p>
+                  {
+                    item.avaliable ? 'Available' : 'Not Available'
+                  }
+                </p>
               </div>
               <p className="text-gray-900 text-lg font-medium">{item.name}</p>
               <p className="text-gray-600 text-sm">{item.speciality}</p>
