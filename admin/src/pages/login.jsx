@@ -3,6 +3,7 @@ import { assets } from "../assets/assets_admin/assets";
 import { AdminContext } from "../context/AdminContext.jsx";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { DoctorContext } from "../context/DoctorContext.jsx";
 
 const Login = () => {
   const [state, setstate] = useState("Admin");
@@ -10,6 +11,7 @@ const Login = () => {
 
   const [email, setemail] = useState("");
   const [password, setpassword] = useState("");
+  const { dtoken, setdtoken } = useContext(DoctorContext);
 
   const onsubmithandler = async (e) => {
     e.preventDefault();
@@ -24,9 +26,20 @@ const Login = () => {
         if (data.success) {
           localStorage.setItem("atoken", data.data.accesstoken);
           setatoken(data.data.accesstoken);
-          toast.success(data.message);
         } else {
-          toast.error(data.message);
+          toast.error(error?.response?.data?.message || "Something went wrong!");
+        }
+      } else {
+        const { data } = await axios.post(`${backendurl}/doctors/login`, {
+          email,
+          password,
+        });
+
+        if (data.success) {
+          localStorage.setItem("dtoken", data.data.token);
+          setdtoken(data.data.token);
+        } else {
+          toast.error(error?.response?.data?.message || "Something went wrong!");
         }
       }
     } catch (err) {

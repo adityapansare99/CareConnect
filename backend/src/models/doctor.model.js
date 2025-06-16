@@ -84,6 +84,10 @@ doctorschema.pre("save", async function (next) {
   next();
 });
 
+doctorschema.methods.isPasswordCorrect = async function (password) {
+  return await bcrypt.compare(password, this.password);
+};
+
 const Doctor=mongoose.model("doctors",doctorschema);
 
 export {Doctor}
