@@ -132,9 +132,10 @@ const alldoctors = asynchandler(async (req, res) => {
 const allappointments = asynchandler(async (req, res) => {
   try {
     const appointments = await Appointment.find({});
+    const reversedAppointments = appointments.slice().reverse();
     res
       .status(200)
-      .json(new ApiResponse(200, appointments, "All appointments fetched"));
+      .json(new ApiResponse(200, reversedAppointments, "All appointments fetched"));
   } catch (err) {
     res.status(400).json(new ApiResponse(400, {}, err.message));
   }
