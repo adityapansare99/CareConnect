@@ -1,3 +1,3 @@
-const dbname='careconnect';
+const dbname = "careconnect";
 
-export {dbname}
+export { dbname };

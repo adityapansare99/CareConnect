@@ -11,9 +11,8 @@ import {
   deletefromcloudinary,
 } from "../utils/cloudinary.js";
 import jwt from "jsonwebtoken";
-import {User} from "../models/user.model.js"
+import { User } from "../models/user.model.js";
 
-//Adding doctor
 const adddoctor = asynchandler(async (req, res) => {
   const err = validationResult(req);
 
@@ -85,7 +84,6 @@ const adddoctor = asynchandler(async (req, res) => {
     .json(new ApiResponse(200, doctor, "Doctor added successfully"));
 });
 
-//Api for the admin login
 const adminlogin = asynchandler(async (req, res) => {
   const { email, password } = req.body;
 
@@ -122,7 +120,6 @@ const adminlogin = asynchandler(async (req, res) => {
   }
 });
 
-//All doctors
 const alldoctors = asynchandler(async (req, res) => {
   try {
     const doctors = await Doctor.find({}).select("-password");
@@ -132,7 +129,6 @@ const alldoctors = asynchandler(async (req, res) => {
   }
 });
 
-//get all appointments
 const allappointments = asynchandler(async (req, res) => {
   try {
     const appointments = await Appointment.find({});
@@ -144,7 +140,6 @@ const allappointments = asynchandler(async (req, res) => {
   }
 });
 
-//cancel an appointment
 const cancelappointment = asynchandler(async (req, res) => {
   try {
     const { appointmentId } = req.body;
@@ -176,24 +171,32 @@ const cancelappointment = asynchandler(async (req, res) => {
   }
 });
 
-//Dashboard data
 const admindashboard = asynchandler(async (req, res) => {
   try {
     const doctors = await Doctor.find({}).select("-password");
-    const user=await User.find({}).select("-password");
+    const user = await User.find({}).select("-password");
     const appointments = await Appointment.find({});
 
-    const dashData={
-      doctors:doctors.length,
-      users:user.length,
-      appointments:appointments.length,
-      latestAppointment:appointments.reverse().slice(0,5)
-    }
+    const dashData = {
+      doctors: doctors.length,
+      users: user.length,
+      appointments: appointments.length,
+      latestAppointment: appointments.reverse().slice(0, 5),
+    };
 
-    res.status(200).json(new ApiResponse(200, dashData, "Dashboard data fetched"));
+    res
+      .status(200)
+      .json(new ApiResponse(200, dashData, "Dashboard data fetched"));
   } catch (error) {
     res.status(400).json(new ApiResponse(400, {}, error.message));
   }
-})
+});
 
-export { adddoctor, adminlogin, alldoctors, allappointments,cancelappointment,admindashboard };
+export {
+  adddoctor,
+  adminlogin,
+  alldoctors,
+  allappointments,
+  cancelappointment,
+  admindashboard,
+};

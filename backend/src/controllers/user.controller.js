@@ -9,7 +9,6 @@ import { Doctor } from "../models/doctor.model.js";
 import Appointment from "../models/Appointment.model.js";
 import razorpay from "razorpay";
 
-//register user
 const registeruser = asynchandler(async (req, res) => {
   const { name, email, password } = req.body;
 
@@ -67,7 +66,6 @@ const registeruser = asynchandler(async (req, res) => {
   }
 });
 
-//login user
 const loginuser = asynchandler(async (req, res) => {
   const { email, password } = req.body;
 
@@ -119,7 +117,6 @@ const loginuser = asynchandler(async (req, res) => {
   }
 });
 
-//user data
 const getprofile = asynchandler(async (req, res) => {
   try {
     const user = await User.findById(req.user._id).select("-password");
@@ -129,7 +126,6 @@ const getprofile = asynchandler(async (req, res) => {
   }
 });
 
-//update the user
 const updateuser = asynchandler(async (req, res) => {
   try {
     const { name, address, dob, gender, phone } = req.body;
@@ -168,7 +164,6 @@ const updateuser = asynchandler(async (req, res) => {
   }
 });
 
-//book appointment
 const bookappointment = asynchandler(async (req, res) => {
   const { docId, slotDate, slotTime } = req.body;
 
@@ -182,8 +177,10 @@ const bookappointment = asynchandler(async (req, res) => {
   try {
     const docData = await Doctor.findById(docId).select("-password");
 
-    if(docData.avaliable === false){
-      return res.status(400).json(new ApiResponse(400, {}, "Doctor is not avaliable"));
+    if (docData.avaliable === false) {
+      return res
+        .status(400)
+        .json(new ApiResponse(400, {}, "Doctor is not avaliable"));
     }
 
     if (!docData) {
@@ -238,7 +235,6 @@ const bookappointment = asynchandler(async (req, res) => {
   }
 });
 
-//all appointments that are booked by user
 const getappointments = asynchandler(async (req, res) => {
   try {
     const appointments = await Appointment.find({ userId: req.user._id });
@@ -250,7 +246,6 @@ const getappointments = asynchandler(async (req, res) => {
   }
 });
 
-//cancel the appointment
 const cancelappointment = asynchandler(async (req, res) => {
   try {
     const userId = req.user._id;
@@ -288,7 +283,6 @@ const razorpayinstance = new razorpay({
   key_secret: process.env.RazorPaySecretKey,
 });
 
-//appointment payment using razorpay
 const payment = asynchandler(async (req, res) => {
   try {
     const { appointmentId } = req.body;
@@ -304,7 +298,7 @@ const payment = asynchandler(async (req, res) => {
     }
 
     const options = {
-      amount: appointmentData.amount*100,
+      amount: appointmentData.amount * 100,
       currency: process.env.Currency,
       receipt: appointmentId,
     };
@@ -317,25 +311,22 @@ const payment = asynchandler(async (req, res) => {
   }
 });
 
-//api to verify the payment
 const verifypayment = asynchandler(async (req, res) => {
   try {
-    const {razorpay_order_id} = req.body;
-    const orderInfo=await razorpayinstance.orders.fetch(razorpay_order_id);
+    const { razorpay_order_id } = req.body;
+    const orderInfo = await razorpayinstance.orders.fetch(razorpay_order_id);
 
-    if(orderInfo.status==="paid"){
+    if (orderInfo.status === "paid") {
       const appointmentId = orderInfo.receipt;
-      await Appointment.findByIdAndUpdate(appointmentId,{payment:true});
+      await Appointment.findByIdAndUpdate(appointmentId, { payment: true });
       res.status(200).json(new ApiResponse(200, {}, "Payment Successful"));
-    }
-
-    else{
+    } else {
       res.status(400).json(new ApiResponse(400, {}, "Payment not Successful"));
     }
   } catch (error) {
     res.status(400).json(new ApiResponse(400, {}, error.message));
   }
-})
+});
 
 export {
   registeruser,
@@ -346,5 +337,5 @@ export {
   getappointments,
   cancelappointment,
   payment,
-  verifypayment
+  verifypayment,
 };

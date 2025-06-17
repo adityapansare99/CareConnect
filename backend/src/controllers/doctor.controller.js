@@ -37,7 +37,6 @@ const getalldoctors = asynchandler(async (req, res) => {
   }
 });
 
-//login doctor
 const logindoctor = asynchandler(async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -96,7 +95,6 @@ const logindoctor = asynchandler(async (req, res) => {
   }
 });
 
-//doctors appointments
 const docappointments = asynchandler(async (req, res) => {
   try {
     const docId = req.doc._id;
@@ -123,7 +121,6 @@ const docappointments = asynchandler(async (req, res) => {
   }
 });
 
-//appointment completed
 const completedappointment = asynchandler(async (req, res) => {
   try {
     const { appointmentId } = req.body;
@@ -152,7 +149,6 @@ const completedappointment = asynchandler(async (req, res) => {
   }
 });
 
-//appointment cancelled
 const cancelappointment = asynchandler(async (req, res) => {
   try {
     const { appointmentId } = req.body;
@@ -181,73 +177,70 @@ const cancelappointment = asynchandler(async (req, res) => {
   }
 });
 
-//get dashboard data
 const dashboardData = asynchandler(async (req, res) => {
   try {
     const docId = req.doc._id;
 
-    const appointments=await Appointment.find({docId});
+    const appointments = await Appointment.find({ docId });
 
-    let earnings=0;
+    let earnings = 0;
 
-    appointments.map((item)=>{
-      if(item.isComplete || item.payment){
-        earnings+=item.amount;
+    appointments.map((item) => {
+      if (item.isComplete || item.payment) {
+        earnings += item.amount;
       }
-    })
+    });
 
-    let patients=[];
-    appointments.map((item)=>{
-      if(!patients.includes(item.userId)){
+    let patients = [];
+    appointments.map((item) => {
+      if (!patients.includes(item.userId)) {
         patients.push(item.userId);
       }
-    })
+    });
 
-    const dashData={
+    const dashData = {
       earnings,
-      appointments:appointments.length,
-      patients:patients.length,
-      latestAppointment:appointments.reverse().slice(0,5)
-    }
+      appointments: appointments.length,
+      patients: patients.length,
+      latestAppointment: appointments.reverse().slice(0, 5),
+    };
 
-    res.status(200).json(new ApiResponse(200, dashData, "Dashboard data fetched"));
+    res
+      .status(200)
+      .json(new ApiResponse(200, dashData, "Dashboard data fetched"));
   } catch (error) {
     res.status(400).json(new ApiResponse(400, {}, error.message));
   }
 });
 
-//get doctor profile
 const docProfile = asynchandler(async (req, res) => {
   try {
     const docid = req.doc._id;
     const doctor = await Doctor.findById(docid).select("-password");
-    res
-      .status(200)
-      .json(new ApiResponse(200, doctor, "Doctor Data Fetched"));
+    res.status(200).json(new ApiResponse(200, doctor, "Doctor Data Fetched"));
   } catch (error) {
     res.status(400).json(new ApiResponse(400, {}, error.message));
   }
-})
+});
 
-//update doctor profile
 const updateprofile = asynchandler(async (req, res) => {
   try {
-    const {fees,address,avaliable}=req.body;
+    const { fees, address, avaliable } = req.body;
     const docid = req.doc._id;
 
     const doctor = await Doctor.findByIdAndUpdate(docid, {
       fees,
       address,
-      avaliable
-    })
+      avaliable,
+    });
 
-    const updateddoc=await Doctor.findById(docid).select("-password");
+    const updateddoc = await Doctor.findById(docid).select("-password");
 
     res.status(200).json(new ApiResponse(200, updateddoc, "Profile Updated"));
   } catch (error) {
     res.status(400).json(new ApiResponse(400, {}, error.message));
   }
-})
+});
 
 export {
   changeavailable,
@@ -258,5 +251,5 @@ export {
   cancelappointment,
   dashboardData,
   docProfile,
-  updateprofile
+  updateprofile,
 };
