@@ -15,7 +15,7 @@ const DoctorContextProvider = (props) => {
   const [dashData, setdashData] = useState(false);
   const currency = "₹";
 
-  const[profileData,setprofileData]=useState(false);
+  const [profileData, setprofileData] = useState(false);
 
   const getAppointments = async () => {
     try {
@@ -26,12 +26,10 @@ const DoctorContextProvider = (props) => {
 
       if (data.success) {
         setappointments(data.data.reverse());
-        console.log(data.data);
       } else {
         toast.error("Something went wrong!");
       }
     } catch (err) {
-      console.log(err);
       toast.error(err?.response?.data?.message || "Something went wrong!");
     }
   };
@@ -83,27 +81,27 @@ const DoctorContextProvider = (props) => {
       if (data.success) {
         setdashData(data.data);
       } else {
-        toast.error(error?.response?.data?.message ||"Something went wrong!");
+        toast.error(error?.response?.data?.message || "Something went wrong!");
       }
     } catch (error) {
-      toast.error(error?.response?.data?.message ||"Something went wrong!");
+      toast.error(error?.response?.data?.message || "Something went wrong!");
     }
   };
 
-  const getprofiledata=async()=>{
+  const getprofiledata = async () => {
     try {
-      const {data}=await axios.get(`${backendurl}/doctors/doc-profile`,{headers:{Authorization:`Bearer ${dtoken}`}})
-      if(data.success){
+      const { data } = await axios.get(`${backendurl}/doctors/doc-profile`, {
+        headers: { Authorization: `Bearer ${dtoken}` },
+      });
+      if (data.success) {
         setprofileData(data.data);
-      }
-
-      else{
+      } else {
         toast.error("Something went wrong!");
       }
     } catch (error) {
-      toast.error(error?.response?.data?.message ||"Something went wrong!");
+      toast.error(error?.response?.data?.message || "Something went wrong!");
     }
-  }
+  };
 
   const value = {
     dtoken,
@@ -120,7 +118,7 @@ const DoctorContextProvider = (props) => {
     currency,
     setprofileData,
     getprofiledata,
-    profileData
+    profileData,
   };
 
   return (

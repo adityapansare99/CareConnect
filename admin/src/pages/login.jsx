@@ -27,7 +27,9 @@ const Login = () => {
           localStorage.setItem("atoken", data.data.accesstoken);
           setatoken(data.data.accesstoken);
         } else {
-          toast.error(error?.response?.data?.message || "Something went wrong!");
+          toast.error(
+            error?.response?.data?.message || "Something went wrong!"
+          );
         }
       } else {
         const { data } = await axios.post(`${backendurl}/doctors/login`, {
@@ -39,7 +41,9 @@ const Login = () => {
           localStorage.setItem("dtoken", data.data.token);
           setdtoken(data.data.token);
         } else {
-          toast.error(error?.response?.data?.message || "Something went wrong!");
+          toast.error(
+            error?.response?.data?.message || "Something went wrong!"
+          );
         }
       }
     } catch (err) {

@@ -3,7 +3,7 @@ import "./index.css";
 import Login from "./pages/Login";
 import { ToastContainer, toast } from "react-toastify";
 import { AdminContext } from "./context/AdminContext";
-import Navbar from "./components/navbar";
+import Navbar from "./components/Navbar";
 import SideBar from "./components/SideBar";
 import { Route, Routes } from "react-router-dom";
 import Dashboard from "./pages/Admin/Dashboard";
@@ -17,27 +17,27 @@ import DoctorProfile from "./pages/Doctor/DoctorProfile";
 
 const App = () => {
   const { atoken } = useContext(AdminContext);
-  const {dtoken}=useContext(DoctorContext);
+  const { dtoken } = useContext(DoctorContext);
 
   return atoken || dtoken ? (
     <div className="bg-[#F8F9FD] min-h-screen">
       <ToastContainer />
-      <Navbar/>
+      <Navbar />
       <div className="flex items-start">
-      <SideBar/>
-      <Routes>
-        {/* Admin Routes */}
-        <Route path='/' element={<></>}/>
-        <Route path='/admin-dashboard' element={<Dashboard/>}/>
-        <Route path='/all-appointments' element={<AllAppointmnet/>}/>
-        <Route path='/add-doctors' element={<AddDoctor/>}/>
-        <Route path='/doctors-list' element={<Doctorlist/>}/>
+        <SideBar />
+        <Routes>
+          {/* Admin Routes */}
+          <Route path="/" element={<></>} />
+          <Route path="/admin-dashboard" element={<Dashboard />} />
+          <Route path="/all-appointments" element={<AllAppointmnet />} />
+          <Route path="/add-doctors" element={<AddDoctor />} />
+          <Route path="/doctors-list" element={<Doctorlist />} />
 
-        {/* Doctor Routes */}
-        <Route path='/doctor-dashboard' element={<DoctorDashboard/>}/>
-        <Route path='/doctor-appointments' element={<DoctorAppointmetns/>}/>
-        <Route path='/doctor-profile' element={<DoctorProfile/>}/>
-      </Routes>
+          {/* Doctor Routes */}
+          <Route path="/doctor-dashboard" element={<DoctorDashboard />} />
+          <Route path="/doctor-appointments" element={<DoctorAppointmetns />} />
+          <Route path="/doctor-profile" element={<DoctorProfile />} />
+        </Routes>
       </div>
     </div>
   ) : (

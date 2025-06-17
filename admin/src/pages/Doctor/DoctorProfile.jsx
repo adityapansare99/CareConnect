@@ -5,38 +5,40 @@ import { AppContext } from "../../context/AppContext";
 import { useEffect } from "react";
 import { useState } from "react";
 import axios from "axios";
-import {toast} from 'react-toastify'
+import { toast } from "react-toastify";
 
 const DoctorProfile = () => {
-  const { dtoken, getprofiledata, profileData, setprofileData,backendurl } =
+  const { dtoken, getprofiledata, profileData, setprofileData, backendurl } =
     useContext(DoctorContext);
 
   const { currency } = useContext(AppContext);
   const [isEdit, setisEdit] = useState(false);
 
-  const updateprofile=async()=>{
+  const updateprofile = async () => {
     try {
-      const updateData={
-        address:profileData.address,
-        fees:profileData.fees,
-        avaliable:profileData.avaliable
-      }
+      const updateData = {
+        address: profileData.address,
+        fees: profileData.fees,
+        avaliable: profileData.avaliable,
+      };
 
-      const {data}=await axios.post(`${backendurl}/doctors/update-profile`,updateData,{headers:{Authorization:`Bearer ${dtoken}`}})
+      const { data } = await axios.post(
+        `${backendurl}/doctors/update-profile`,
+        updateData,
+        { headers: { Authorization: `Bearer ${dtoken}` } }
+      );
 
-      if(data.success){
+      if (data.success) {
         toast.success(data.message);
         setisEdit(false);
         getprofiledata();
-      }
-      else{
-        toast.error('Something went wrong!');
+      } else {
+        toast.error("Something went wrong!");
       }
     } catch (error) {
-      console.log(error);
       toast.error(error?.response?.data?.message || "Something went wrong!");
     }
-  }
+  };
 
   useEffect(() => {
     if (dtoken) {

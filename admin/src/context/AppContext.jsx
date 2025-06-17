@@ -11,7 +11,7 @@ const AppContextProvider = (props) => {
     return age;
   };
 
-   const months = [
+  const months = [
     " ",
     "Jan",
     "Feb",
@@ -33,11 +33,11 @@ const AppContextProvider = (props) => {
     );
   };
 
-  const currency='₹'
+  const currency = "₹";
   const value = {
     calculateage,
     dateformat,
-    currency
+    currency,
   };
 
   return (

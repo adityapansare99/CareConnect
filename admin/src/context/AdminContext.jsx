@@ -75,11 +75,10 @@ const AdminContextProvider = (props) => {
         { headers: { Authorization: `Bearer ${atoken}` } }
       );
 
-      if(data.success){
+      if (data.success) {
         toast.success(data.message);
         getallappointments();
-      }
-      else{
+      } else {
         toast.error(data.message || "Something went wrong!");
       }
     } catch (error) {
@@ -87,21 +86,21 @@ const AdminContextProvider = (props) => {
     }
   };
 
-  const dashData=async()=>{
+  const dashData = async () => {
     try {
-      const {data}=await axios.get(`${backendurl}/admin/dashboard`,{headers:{Authorization:`Bearer ${atoken}`}})
+      const { data } = await axios.get(`${backendurl}/admin/dashboard`, {
+        headers: { Authorization: `Bearer ${atoken}` },
+      });
 
-      if(data.success){
+      if (data.success) {
         setdashboarddata(data.data);
-      }
-
-      else{
+      } else {
         toast.error("Something went wrong!");
       }
     } catch (error) {
       toast.error(error?.response?.data?.message || "Something went wrong!");
     }
-  }
+  };
 
   const value = {
     atoken,
@@ -115,7 +114,7 @@ const AdminContextProvider = (props) => {
     allappointments,
     cancelAppointment,
     dashData,
-    dashboarddata
+    dashboarddata,
   };
 
   return (
