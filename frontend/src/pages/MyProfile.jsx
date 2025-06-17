@@ -7,7 +7,7 @@ import { toast } from "react-toastify";
 
 export const MyProfile = () => {
   const { userdata, setuserdata, token, backendurl, userprofiledata } =
-    useContext(AppContext);            
+    useContext(AppContext);
 
   const [isEdit, setisEdit] = useState(false);
 

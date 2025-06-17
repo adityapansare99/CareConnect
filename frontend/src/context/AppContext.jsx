@@ -10,8 +10,10 @@ const AppContextProvider = (props) => {
   const currency = "₹";
 
   const [doctors, setdoctors] = useState([]);
-  const [token, settoken] = useState(localStorage.getItem("token")?localStorage.getItem("token"):"");
-  const [userdata,setuserdata]=useState(false);
+  const [token, settoken] = useState(
+    localStorage.getItem("token") ? localStorage.getItem("token") : ""
+  );
+  const [userdata, setuserdata] = useState(false);
 
   const getdocdata = async () => {
     try {
@@ -23,35 +25,33 @@ const AppContextProvider = (props) => {
         toast.error("Something went wrong!");
       }
     } catch (err) {
-      console.log(err);
       toast.error("Something went wrong!");
     }
   };
 
-  const userprofiledata=async()=>{
+  const userprofiledata = async () => {
     try {
-     const {data}=await axios.get(`${backendurl}/user/user-profile`,{headers:{Authorization:`Bearer ${token}`}})
+      const { data } = await axios.get(`${backendurl}/user/user-profile`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
 
-     if(data.success){
-      setuserdata(data.data);
-      toast.success(data.message);
-     }
-
-     else{
-      toast.error("Something went wrong!");
-     }
+      if (data.success) {
+        setuserdata(data.data);
+        toast.success(data.message);
+      } else {
+        toast.error("Something went wrong!");
+      }
     } catch (error) {
       toast.error("Something went wrong!");
     }
-  }
+  };
 
   useEffect(() => {
     getdocdata();
   }, []);
 
   useEffect(() => {
-    if(token)
-    userprofiledata();
+    if (token) userprofiledata();
   }, [token]);
 
   const value = {
@@ -63,7 +63,7 @@ const AppContextProvider = (props) => {
     backendurl,
     userdata,
     setuserdata,
-    userprofiledata
+    userprofiledata,
   };
 
   return (
