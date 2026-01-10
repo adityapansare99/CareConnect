@@ -19,10 +19,11 @@ const SideBar = () => {
 
   return (
     <>
-      {/* Mobile Menu Button */}
       <button
         onClick={toggleMobileMenu}
-        className="lg:hidden fixed top-20 left-4 z-50 bg-white p-3 rounded-lg shadow-lg border border-gray-200 hover:bg-gray-50 transition-colors"
+        className={`lg:hidden ${
+          isMobileMenuOpen ? "hidden" : ""
+        } fixed top-19 right-4 z-50 bg-white p-3 rounded-lg shadow-lg border border-gray-200 hover:bg-gray-50 transition-colors`}
       >
         <svg
           className="w-6 h-6 text-gray-700"
@@ -41,17 +42,19 @@ const SideBar = () => {
 
       {isMobileMenuOpen && (
         <div
-          className="lg:hidden fixed inset-0 bg-black bg-opacity-50 z-40 transition-opacity"
+          className="lg:hidden fixed top-16 left-0 right-0 bottom-0 bg-black bg-opacity-50 z-30"
           onClick={closeMobileMenu}
         ></div>
       )}
 
       <div
-        className={`fixed lg:static inset-y-0 left-0 z-40 w-72 bg-white border-r transform transition-transform duration-300 ease-in-out ${
-          isMobileMenuOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
-        }`}
+        className={`fixed top-16 w-full lg:w-72 h-[calc(100vh-64px)] lg:static lg:h-auto z-40 bg-white border-r
+  transform transition-transform duration-300 ease-in-out
+  ${isMobileMenuOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}
+`}
       >
-        <button
+        <div className="h-[8vh] border-b lg:hidden border-gray-200 flex items-center justify-between px-6 py-4 relative">
+          <button
           onClick={closeMobileMenu}
           className="lg:hidden absolute top-4 right-4 p-2 rounded-lg hover:bg-gray-100 transition-colors"
         >
@@ -69,12 +72,6 @@ const SideBar = () => {
             />
           </svg>
         </button>
-
-        <div className="px-6 py-6 border-b border-gray-200 md:hidden">
-          <h2 className="text-lg font-bold text-gray-800">Navigation</h2>
-          <p className="text-xs text-gray-500 mt-1">
-            {atoken ? "Admin Panel" : "Doctor Panel"}
-          </p>
         </div>
 
         {atoken && (
