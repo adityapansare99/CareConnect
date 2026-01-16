@@ -14,7 +14,6 @@ const Login = () => {
 
   const onsubmithandler = async (e) => {
     e.preventDefault();
-
     try {
       if (state === "Sign up") {
         const { data } = await axios.post(`${backendurl}/user/register`, {
@@ -58,86 +57,111 @@ const Login = () => {
   }, [token]);
 
   return (
-    <div>
-      <form
-        onSubmit={onsubmithandler}
-        className="min-h-[80vh] flex items-center"
-      >
-        <div className="flex flex-col gap-3 m-auto items-start p-8 min-w-[340px] sm:min-w-96 border rounded-xl text-zinc-600 text-sm shadow-lg">
-          <p className="font-semibold text-2xl">
-            {state === "Sign up" ? "Create Account" : "Login"}
+    <div className="min-h-[80vh] flex items-center justify-center px-4 py-12">
+      <div className="w-full max-w-md">
+        <div className="text-center mb-8">
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">
+            {state === "Sign up" ? (
+              <>
+                Create <span className="text-indigo-600">Account</span>
+              </>
+            ) : (
+              <>
+                Welcome <span className="text-indigo-600">Back</span>
+              </>
+            )}
+          </h1>
+          <p className="text-gray-600 text-sm">
+            {state === "Sign up"
+              ? "Sign up to book your appointment with top doctors"
+              : "Login to manage your appointments and health records"}
           </p>
-          <p>
-            Please {state === "Sign up" ? " sign up" : " log in"} to book
-            appointment
-          </p>
-          {state === "Sign up" && (
-            <div className="w-full">
-              <p>Full Name</p>
+        </div>
+
+        <form onSubmit={onsubmithandler}>
+          <div className="bg-white rounded-2xl shadow-lg p-8 space-y-6">
+            {state === "Sign up" && (
+              <div className="space-y-2">
+                <label className="text-sm font-semibold text-gray-700">
+                  Full Name
+                </label>
+                <input
+                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition-all duration-300"
+                  type="text"
+                  placeholder="Enter your full name"
+                  onChange={(e) => setname(e.target.value)}
+                  value={name}
+                  required
+                />
+              </div>
+            )}
+
+            <div className="space-y-2">
+              <label className="text-sm font-semibold text-gray-700">
+                Email Address
+              </label>
               <input
-                className="border border-zinc-300 rounded w-full p-2 mt-1"
-                type="text"
-                onChange={(e) => setname(e.target.value)}
-                value={name}
+                className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition-all duration-300"
+                type="email"
+                placeholder="Enter your email"
+                onChange={(e) => setemail(e.target.value)}
+                value={email}
                 required
               />
             </div>
-          )}
+            <div className="space-y-2">
+              <label className="text-sm font-semibold text-gray-700">
+                Password
+              </label>
+              <input
+                className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition-all duration-300"
+                type="password"
+                placeholder="Enter your password"
+                onChange={(e) => setpassword(e.target.value)}
+                value={password}
+                required
+              />
+            </div>
 
-          <div className="w-full">
-            <p>Email</p>
-            <input
-              className="border border-zinc-300 rounded w-full p-2 mt-1"
-              type="email"
-              onChange={(e) => setemail(e.target.value)}
-              value={email}
-              required
-            />
-          </div>
+            <button
+              type="submit"
+              className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white py-3 rounded-lg font-semibold hover:shadow-xl hover:scale-105 transition-all duration-300"
+            >
+              {state === "Sign up" ? "Create Account" : "Login"}
+            </button>
 
-          <div className="w-full">
-            <p>Password</p>
-            <input
-              className="border border-zinc-300 rounded w-full p-2 mt-1"
-              type="password"
-              onChange={(e) => setpassword(e.target.value)}
-              value={password}
-              required
-            />
+            <div className="text-center pt-2">
+              {state === "Sign up" ? (
+                <p className="text-sm text-gray-600">
+                  Already have an account?{" "}
+                  <span
+                    onClick={() => setstate("Login")}
+                    className="text-indigo-600 font-semibold hover:text-indigo-700 cursor-pointer underline"
+                  >
+                    Login here
+                  </span>
+                </p>
+              ) : (
+                <p className="text-sm text-gray-600">
+                  Don't have an account?{" "}
+                  <span
+                    onClick={() => setstate("Sign up")}
+                    className="text-indigo-600 font-semibold hover:text-indigo-700 cursor-pointer underline"
+                  >
+                    Sign up here
+                  </span>
+                </p>
+              )}
+            </div>
           </div>
-          <button
-            type="submit"
-            className="bg-[#5f6FFF] text-white w-full py-2 rounded-md text-base"
-          >
-            {state === "Sign up" ? "Create Account" : "Login"}
-          </button>
-          {state === "Sign up" ? (
-            <p>
-              Already have an account?{" "}
-              <span
-                onClick={() => {
-                  setstate("Login");
-                }}
-                className="text-[#5f6FFF] underline cursor-pointer"
-              >
-                Login here
-              </span>{" "}
-            </p>
-          ) : (
-            <p>
-              Create an new account?{" "}
-              <span
-                onClick={() => {
-                  setstate("Sign up");
-                }}
-                className="text-[#5f6FFF] underline cursor-pointer"
-              >
-                click here
-              </span>
-            </p>
-          )}
+        </form>
+        
+        <div className="text-center mt-6">
+          <p className="text-xs text-gray-500">
+            By continuing, you agree to our Terms of Service and Privacy Policy
+          </p>
         </div>
-      </form>
+      </div>
     </div>
   );
 };

@@ -23,7 +23,6 @@ const Navbar = () => {
         alt="Logo"
       />
       
-      {/* Desktop Menu */}
       <ul className="hidden md:flex items-center gap-8 font-medium">
         <NavLink to="/">
           {({ isActive }) => (
@@ -109,7 +108,6 @@ const Navbar = () => {
           </button>
         )}
 
-        {/* Mobile Menu Button */}
         <img
           onClick={() => setShowMenu(true)}
           className="w-6 md:hidden cursor-pointer"
@@ -117,7 +115,6 @@ const Navbar = () => {
           alt="Menu"
         />
 
-        {/* Mobile Menu Overlay */}
         <div
           className={`${
             showMenu ? "fixed w-full" : "h-0 w-0"

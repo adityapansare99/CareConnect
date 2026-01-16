@@ -5,34 +5,32 @@ const Contact = () => {
   return (
     <div>
       <div className="text-center text-2xl pt-10 text-gray-500">
-        <p>
-          CONTACT <span className="text-gray-700 font-semibold">US</span>{" "}
+        <p className="text-3xl font-bold">
+          CONTACT <span className="text-gray-900">US</span>
         </p>
       </div>
 
-      <div className="my-10 flex flex-col justify-center md:flex-row gap-10 mb-28 text-sm">
+      <div className="my-10 flex flex-col md:flex-row gap-12">
         <img
-          className="w-full md:max-w-[360px]"
+          className="w-full md:max-w-[400px] md:mr-10 rounded-2xl shadow-lg"
           src={assets.contact_image}
-          alt=""
+          alt="Contact Us"
         />
 
-        <div className="flex flex-col justify-center gap-6 items-start">
-          <p className="font-semibold text-lg text-gray-600">OUR OFFICE</p>
-          <p className="text-gray-500">
+        <div className="flex flex-col gap-6 justify-center md:w-2/4 text-sm text-gray-600">
+          <b className="text-gray-900 text-base">OUR OFFICE</b>
+          <p className="leading-relaxed">
             00000 Hinjawadi IT Park 000, <br /> Pune, India
           </p>
-          <p className="text-gray-500">
+          <p className="leading-relaxed">
             Tel: (000) 000-000 <br />
             Email: example@gmail.com
           </p>
-          <p className="font-semibold text-lg text-gray-600">
-            CAREERS AT PRESCRIPTO
-          </p>
-          <p className="text-gray-500">
+          <b className="text-gray-900 text-base">CAREERS AT CareConnect</b>
+          <p className="leading-relaxed">
             Learn more about our teams and job openings.
           </p>
-          <button className="border border-black px-8 py-4 text-sm hover:bg-black hover:text-white transition-all duration-500">
+          <button className="border border-gray-900 px-8 py-4 text-sm hover:bg-gradient-to-r hover:from-indigo-600 hover:to-purple-600 hover:text-white hover:border-transparent transition-all duration-300 rounded-lg shadow-sm hover:shadow-xl w-fit">
             Explore Jobs
           </button>
         </div>
