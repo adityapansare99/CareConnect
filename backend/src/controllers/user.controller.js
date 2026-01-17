@@ -307,7 +307,7 @@ const payment = asynchandler(async (req, res) => {
 
     res.status(200).json(new ApiResponse(200, order, "Order created"));
   } catch (error) {
-    res.status(400).json(new ApiResponse(400, {}, error.message));
+    res.status(400).json(new ApiResponse(400, {}, "Payment failed"));
   }
 });
 
